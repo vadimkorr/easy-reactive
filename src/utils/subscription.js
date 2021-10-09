@@ -5,7 +5,7 @@ export const subscription = () => {
 
   const memoDependency = (target, dep) => {
     const { watcherName, fn } = target
-    const { key, value } = dep
+    const { prop, value } = dep
 
     if (!subscribers[watcherName]) {
       subscribers[watcherName] = {
@@ -13,10 +13,11 @@ export const subscription = () => {
         fn,
       }
     }
-    subscribers[watcherName].deps[key] = value
+    subscribers[watcherName].deps[prop] = value
   }
 
   return {
+    subscribers,
     subscribe: (target, dep) => {
       if (target) {
         memoDependency(target, dep)
@@ -25,6 +26,8 @@ export const subscription = () => {
     notify: (data) => {
       Object.entries(subscribers).forEach(([watcherName, { deps }]) => {
         const newDeps = getObject(deps, data)
+        // console.log('notify', watcherName)
+        // console.log(deps)
         if (!objectsAreSame(deps, newDeps)) {
           subscribers[watcherName].deps = newDeps
           subscribers[watcherName].fn()

@@ -14,14 +14,26 @@ export const objectsAreSame = (x, y) => {
   return _objectsAreSame
 }
 
-export const getObject = (oldData, newData) => {
+export function getObject(oldData, allNewData) {
   const newDeps = {}
 
   Object.entries(oldData).forEach(([key, value]) => {
     // console.log('oldData', key, value)
-    newDeps[key] = newData[key]
+    newDeps[key] = allNewData[key]
   })
   // console.log('isDiff', oldData, newDeps)
 
   return newDeps
+}
+
+export function cloneObject(obj) {
+  const clone = {}
+  for (let i in obj) {
+    if (typeof obj[i] == 'object' && obj[i] != null) {
+      clone[i] = cloneObject(obj[i])
+    } else {
+      clone[i] = obj[i]
+    }
+  }
+  return clone
 }

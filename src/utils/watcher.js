@@ -1,14 +1,15 @@
-export const watcher = () => {
+export const createTargetWatcher = () => {
   let target = null
 
   return {
-    watch: (watcherName, fn) => {
+    targetWatcher: (watcherName, fn) => {
       target = {
         watcherName,
         fn,
       }
       target.fn()
       target = null
+      console.log('target', target)
     },
     getTarget: () => {
       return target
