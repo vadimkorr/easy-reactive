@@ -20,18 +20,11 @@ export function simplyReactive(entities, options) {
     methods: _methods,
   })
 
-  let collectingDeps = false
   let callingMethod = false
   const methodWithFlags = (fn) => (...args) => {
     callingMethod = true
     const result = fn(...args)
     callingMethod = false
-    return result
-  }
-  const watchWithFlags = (fn) => (...args) => {
-    collectingDeps = true
-    const result = fn(...args)
-    collectingDeps = false
     return result
   }
 
@@ -45,7 +38,7 @@ export function simplyReactive(entities, options) {
 
   _data = new Proxy(cloneDeep(data), {
     get(target, prop) {
-      if (collectingDeps && !callingMethod) {
+      if (getTarget() && !callingMethod) {
         subscribe(getTarget(), { prop, value: target[prop] })
       }
       return Reflect.get(...arguments)
@@ -58,7 +51,7 @@ export function simplyReactive(entities, options) {
 
       Reflect.set(...arguments)
 
-      if (!collectingDeps) {
+      if (!getTarget()) {
         onChange && onChange(prop, value)
         notify(_data, prop)
       }
@@ -67,13 +60,11 @@ export function simplyReactive(entities, options) {
     },
   })
 
-  watchWithFlags(() =>
-    Object.entries(watch).forEach(([watchName, watchItem]) => {
-      targetWatcher(watchName, () => {
-        watchItem(getContext())
-      })
+  Object.entries(watch).forEach(([watchName, watchItem]) => {
+    targetWatcher(watchName, () => {
+      watchItem(getContext())
     })
-  )()
+  })
 
   const output = [_data, _methods]
   output._internal = {
