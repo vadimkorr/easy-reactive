@@ -1,39 +1,17 @@
-export const objectsAreSame = (x, y) => {
-  // return false
-  let _objectsAreSame = true
-  for (let propertyName in x) {
-    if (Number.isNaN(x[propertyName]) || Number.isNaN(y[propertyName])) {
-      continue
-    }
-    if (x[propertyName] !== y[propertyName]) {
-      _objectsAreSame = false
-      break
-    }
-  }
+import isEqual from 'lodash.isequal'
 
-  return _objectsAreSame
+export const depsAreEqual = (deps1, deps2) => {
+  return isEqual(deps1, deps2)
 }
 
-export function getObject(oldData, allNewData) {
-  const newDeps = {}
+export const getDepNames = (deps) => {
+  return Object.keys(deps || {})
+}
 
-  Object.entries(oldData).forEach(([key, value]) => {
-    // console.log('oldData', key, value)
-    newDeps[key] = allNewData[key]
+export const getUpdatedDeps = (depNames, currentData) => {
+  const updatedDeps = {}
+  depNames.forEach((depName) => {
+    updatedDeps[depName] = currentData[depName]
   })
-  // console.log('isDiff', oldData, newDeps)
-
-  return newDeps
-}
-
-export function cloneObject(obj) {
-  const clone = {}
-  for (let i in obj) {
-    if (typeof obj[i] == 'object' && obj[i] != null) {
-      clone[i] = cloneObject(obj[i])
-    } else {
-      clone[i] = obj[i]
-    }
-  }
-  return clone
+  return updatedDeps
 }

@@ -1,15 +1,16 @@
-import { subscription } from './utils/subscription'
+import get from 'lodash.get'
+import cloneDeep from 'lodash.clonedeep'
+
+import { createSubscription } from './utils/subscription'
 import { createTargetWatcher } from './utils/watcher'
 
-import { cloneObject } from './utils/object'
-
 export function simplyReactive(entities, options) {
-  const data = entities.data
-  const watch = entities.watch
-  const methods = entities?.methods || {}
-  const onChange = options?.onChange || (() => {})
+  const data = get(entities, 'data', {})
+  const watch = get(entities, 'watch', {})
+  const methods = get(entities, 'methods', {})
+  const onChange = get(options, 'onChange', () => {})
 
-  const { subscribe, notify, subscribers } = subscription()
+  const { subscribe, notify, subscribers } = createSubscription()
   const { targetWatcher, getTarget } = createTargetWatcher()
 
   let _data
@@ -42,7 +43,7 @@ export function simplyReactive(entities, options) {
     Object.defineProperty(_methods[methodName], 'name', { value: methodName })
   })
 
-  _data = new Proxy(cloneObject(data), {
+  _data = new Proxy(cloneDeep(data), {
     get(target, prop) {
       if (collectingDeps && !callingMethod) {
         subscribe(getTarget(), { prop, value: target[prop] })
@@ -59,7 +60,7 @@ export function simplyReactive(entities, options) {
 
       if (!collectingDeps) {
         onChange && onChange(prop, value)
-        notify(_data)
+        notify(_data, prop)
       }
 
       return true
