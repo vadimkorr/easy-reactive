@@ -10,7 +10,7 @@ export function simplyReactive(entities, options) {
   const onChange = options.onChange
 
   const { subscribe, notify, subscribers } = subscription()
-  const { targetWatcher, getTarget, clear } = createTargetWatcher()
+  const { targetWatcher, getTarget } = createTargetWatcher()
 
   let _data
   const _methods = {}
@@ -19,59 +19,60 @@ export function simplyReactive(entities, options) {
     methods: _methods,
   })
 
-  let level = 0
+  let collectingDeps = false
+  let callingMethod = false
+  const methodWithFlags = (fn) => (...args) => {
+    callingMethod = true
+    const result = fn(...args)
+    callingMethod = false
+    return result
+  }
+  const watchWithFlags = (fn) => (...args) => {
+    collectingDeps = true
+    const result = fn(...args)
+    collectingDeps = false
+    return result
+  }
 
   // init methods before data, as methods may be used in data
   Object.entries(methods).forEach(([methodName, methodItem]) => {
-    _methods[methodName] = (...args) => {
-      level++
-      const res = methodItem(getContext(), ...args)
-
-      level--
-      return res
-    }
+    _methods[methodName] = methodWithFlags((...args) =>
+      methodItem(getContext(), ...args)
+    )
+    Object.defineProperty(_methods[methodName], 'name', { value: methodName })
   })
 
   _data = new Proxy(cloneObject(data), {
     get(target, prop) {
-      // const w = getTarget()
-      // if (w && w.watcherName === 'setInitialPageIndex') {
-      //   debugger
-      // }
-
-      if (level === 1) {
+      if (collectingDeps && !callingMethod) {
         subscribe(getTarget(), { prop, value: target[prop] })
       }
       return Reflect.get(...arguments)
     },
     set(target, prop, value) {
-      level++
-
-      // const _value = data[prop].pipe ? data[prop].pipe(data[prop].value) : value
-      // Reflect.set(target, prop, _value, receiver)
       // if value is the same, do nothing
       if (target[prop] === value) {
-        level--
         return true
       }
+
       Reflect.set(...arguments)
 
-      onChange && onChange(prop, value)
-      notify(_data)
+      if (!collectingDeps) {
+        onChange && onChange(prop, value)
+        notify(_data)
+      }
 
-      level--
       return true
     },
   })
 
-  Object.entries(watch).forEach(([watchName, watchItem]) => {
-    level++
-    // if (watchName === 'setInitialPageIndex') {
-    //   debugger
-    // }
-    targetWatcher(watchName, () => watchItem(getContext()))
-    level--
-  })
+  watchWithFlags(() =>
+    Object.entries(watch).forEach(([watchName, watchItem]) => {
+      targetWatcher(watchName, () => {
+        watchItem(getContext())
+      })
+    })
+  )()
 
   return [
     _data,

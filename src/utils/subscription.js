@@ -26,8 +26,7 @@ export const subscription = () => {
     notify: (data) => {
       Object.entries(subscribers).forEach(([watcherName, { deps }]) => {
         const newDeps = getObject(deps, data)
-        // console.log('notify', watcherName)
-        // console.log(deps)
+
         if (!objectsAreSame(deps, newDeps)) {
           subscribers[watcherName].deps = newDeps
           subscribers[watcherName].fn()

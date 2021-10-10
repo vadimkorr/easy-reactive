@@ -2,16 +2,15 @@ export const createTargetWatcher = () => {
   let target = null
 
   return {
-    targetWatcher: (watcherName, fn) => {
+    async targetWatcher(watcherName, fn) {
       target = {
         watcherName,
         fn,
       }
-      target.fn()
+      await target.fn()
       target = null
-      console.log('target', target)
     },
-    getTarget: () => {
+    getTarget() {
       return target
     },
   }
