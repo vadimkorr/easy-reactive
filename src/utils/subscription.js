@@ -1,6 +1,6 @@
-import { getObject, objectsAreSame } from './object'
+import { getDepNames, getUpdatedDeps, depsAreEqual } from './object'
 
-export const subscription = () => {
+export const createSubscription = () => {
   const subscribers = {}
 
   const memoDependency = (target, dep) => {
@@ -18,18 +18,21 @@ export const subscription = () => {
 
   return {
     subscribers,
-    subscribe: (target, dep) => {
+    subscribe(target, dep) {
       if (target) {
         memoDependency(target, dep)
       }
     },
-    notify: (data) => {
-      Object.entries(subscribers).forEach(([watcherName, { deps }]) => {
-        const newDeps = getObject(deps, data)
+    notify(data, prop) {
+      Object.entries(subscribers).forEach(([watchName, { deps, fn }]) => {
+        const depNames = getDepNames(deps)
 
-        if (!objectsAreSame(deps, newDeps)) {
-          subscribers[watcherName].deps = newDeps
-          subscribers[watcherName].fn()
+        if (depNames.includes(prop)) {
+          const updatedDeps = getUpdatedDeps(depNames, data)
+          if (!depsAreEqual(deps, updatedDeps)) {
+            subscribers[watchName].deps = updatedDeps
+            fn()
+          }
         }
       })
     },

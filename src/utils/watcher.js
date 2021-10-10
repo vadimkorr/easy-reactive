@@ -2,12 +2,12 @@ export const createTargetWatcher = () => {
   let target = null
 
   return {
-    async targetWatcher(watcherName, fn) {
+    targetWatcher(watcherName, fn) {
       target = {
         watcherName,
         fn,
       }
-      await target.fn()
+      target.fn()
       target = null
     },
     getTarget() {

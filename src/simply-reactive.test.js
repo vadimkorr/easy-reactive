@@ -1,9 +1,5 @@
 import { simplyReactive } from './simply-reactive'
-
-const createGetDepsOf = (reactive) => (watchName) => {
-  const dependencies = reactive._internal._getSubscribers()
-  return Object.keys(dependencies[watchName]?.deps || {})
-}
+import { createGetDepsOf } from './test-utils'
 
 describe('simplyReactive', () => {
   it('can watch', () => {
