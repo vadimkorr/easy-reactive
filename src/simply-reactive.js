@@ -6,8 +6,8 @@ import { cloneObject } from './utils/object'
 export function simplyReactive(entities, options) {
   const data = entities.data
   const watch = entities.watch
-  const methods = entities.methods
-  const onChange = options.onChange
+  const methods = entities?.methods || {}
+  const onChange = options?.onChange || (() => {})
 
   const { subscribe, notify, subscribers } = subscription()
   const { targetWatcher, getTarget } = createTargetWatcher()
@@ -74,13 +74,12 @@ export function simplyReactive(entities, options) {
     })
   )()
 
-  return [
-    _data,
-    _methods,
-    {
-      _getSubscribers() {
-        return subscribers
-      },
+  const output = [_data, _methods]
+  output._internal = {
+    _getSubscribers() {
+      return subscribers
     },
-  ]
+  }
+
+  return output
 }
