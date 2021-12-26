@@ -1,5 +1,5 @@
-import * as get from 'lodash.get'
-import * as cloneDeep from 'lodash.clonedeep'
+import get from 'lodash.get'
+import cloneDeep from 'lodash.clonedeep'
 
 import { createSubscription } from './utils/subscription'
 import { createTargetWatcher } from './utils/watcher'
