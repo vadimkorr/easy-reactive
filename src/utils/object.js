@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash'
+import * as isEqual from 'lodash.isequal'
 
 export const depsAreEqual = (deps1, deps2) => {
   return isEqual(deps1, deps2)
