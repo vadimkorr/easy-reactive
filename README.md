@@ -1,1 +1,1 @@
-# simply-reactive
+# easy-reactive

@@ -1,6 +1,6 @@
 {
-  "name": "simply-reactive",
-  "version": "1.0.0",
+  "name": "easy-reactive",
+  "version": "1.0.2",
   "description": "reactive object",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vadimkorr/simply-reactive.git"
+    "url": "git+https://github.com/vadimkorr/easy-reactive.git"
   },
   "keywords": [
     "reactivity",
@@ -17,9 +17,9 @@
   "author": "vadimkorr",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/vadimkorr/simply-reactive/issues"
+    "url": "https://github.com/vadimkorr/easy-reactive/issues"
   },
-  "homepage": "https://github.com/vadimkorr/simply-reactive#readme",
+  "homepage": "https://github.com/vadimkorr/easy-reactive#readme",
   "devDependencies": {
     "@babel/cli": "^7.15.7",
     "@babel/core": "^7.15.8",
