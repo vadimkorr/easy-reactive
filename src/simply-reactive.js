@@ -1,8 +1,8 @@
 import get from 'lodash.get'
 import cloneDeep from 'lodash.clonedeep'
 
-import { createSubscription } from './utils/subscription'
-import { createTargetWatcher } from './utils/watcher'
+import { createSubscription } from './utils/subscription.js'
+import { createTargetWatcher } from './utils/watcher.js'
 
 export function simplyReactive(entities, options) {
   const data = get(entities, 'data', {})
